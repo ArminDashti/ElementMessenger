@@ -34,6 +34,13 @@ exports[`<AuthFooter /> > should match snapshot 1`] = `
     >
       Powered by Matrix
     </a>
+    <a
+      href="https://github.com/armindashti"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      Modified and maintained by Armin Dashti
+    </a>
   </footer>
 </DocumentFragment>
 `;

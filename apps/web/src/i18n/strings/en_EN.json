@@ -182,6 +182,9 @@
         "continue_with_idp": "Continue with %(provider)s",
         "continue_with_sso": "Continue with %(ssoButtons)s",
         "country_dropdown": "Country Dropdown",
+        "client_downloads_android": "Android",
+        "client_downloads_heading": "Download the app",
+        "client_downloads_ios": "iOS",
         "create_account_prompt": "New here? <a>Create an account</a>",
         "create_account_title": "Create account",
         "email_discovery_text": "Use email to optionally be discoverable by existing contacts.",
@@ -1717,6 +1720,7 @@
         "toast_description": "%(brand)s is experimental on a mobile web browser. For a better experience and the latest features, use our free native app.",
         "toast_title": "Use app for a better experience"
     },
+    "modified_and_maintained_by": "Modified and maintained by Armin Dashti",
     "name_and_id": "%(name)s (%(userId)s)",
     "no_more_results": "No more results",
     "notif_panel": {

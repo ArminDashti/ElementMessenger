@@ -37,6 +37,8 @@ storybook-static
 # TSC incremental compilation information
 *.tsbuildinfo
 
+/element-call-vendor
+
 /.link-config
 
 .nx/cache
@@ -53,3 +55,8 @@ storybook-static
 .cursor/hooks.json
 .cursor/agents/
 .cursor/tools/
+
+/docker/local/.env
+/docker/local/data/
+
+

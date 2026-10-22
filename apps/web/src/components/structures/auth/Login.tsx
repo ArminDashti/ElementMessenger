@@ -28,6 +28,7 @@ import SSOButtons from "../../views/elements/SSOButtons";
 import ServerPicker from "../../views/elements/ServerPicker";
 import AuthBody from "../../views/auth/AuthBody";
 import AuthHeader from "../../views/auth/AuthHeader";
+import { LoginClientDownloadLinks } from "../../views/auth/LoginClientDownloadLinks";
 import AccessibleButton, { type ButtonEvent } from "../../views/elements/AccessibleButton";
 import { type ValidatedServerConfig } from "../../../utils/ValidatedServerConfig";
 import { filterBoolean } from "../../../utils/arrays";
@@ -543,6 +544,7 @@ class LoginComponent extends React.PureComponent<IProps, IState> {
                     {this.renderLoginComponentForFlows()}
                     {this.props.children}
                     {footer}
+                    <LoginClientDownloadLinks />
                 </AuthBody>
             </AuthPage>
         );

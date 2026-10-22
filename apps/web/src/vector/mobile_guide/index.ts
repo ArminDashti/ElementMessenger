@@ -6,8 +6,8 @@ Please see LICENSE files in the repository root for full details.
 */
 
 import "./index.css";
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/600.css";
+import "@fontsource/vazir/400.css";
+import "@fontsource/vazir/700.css";
 
 import { logger } from "matrix-js-sdk/src/logger";
 
@@ -134,3 +134,4 @@ async function initPage(): Promise<void> {
 }
 
 void initPage();
+

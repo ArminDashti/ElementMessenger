@@ -10,6 +10,10 @@ server {
     # so that browsers always check for a new copy of Element Web.
     # NB http://your-domain/ and http://your-domain/? are also covered by this
 
+    location = /sw.js {
+        add_header Cache-Control "no-cache";
+        default_type application/javascript;
+    }
     location = /index.html {
         add_header Cache-Control "no-cache";
     }
@@ -35,4 +39,5 @@ server {
     #
     error_page   500 502 503 504  /50x.html;
 }
+
 

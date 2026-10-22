@@ -85,3 +85,53 @@ div.mx_AccessibleButton_kind_link.mx_Login_forgot {
     width: 100%;
     margin-bottom: 16px;
 }
+
+.mx_Login_clientDownloads {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid $input-darker-bg-color;
+    text-align: center;
+}
+
+.mx_Login_clientDownloads_title {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: $authpage-secondary-color;
+}
+
+.mx_Login_clientDownloads_links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    align-items: center;
+}
+
+.mx_Login_clientDownloadLink {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: $authpage-primary-color;
+    text-decoration: none;
+    font-size: 12px;
+    line-height: 1.2;
+
+    &:hover,
+    &:focus-visible {
+        background-color: $authpage-focus-bg-color;
+    }
+}
+
+.mx_Login_clientDownloadLink_storeBadge {
+    display: block;
+    width: auto;
+    max-width: 120px;
+}
+
+.mx_Login_clientDownloadLink_label {
+    color: $authpage-secondary-color;
+}
+

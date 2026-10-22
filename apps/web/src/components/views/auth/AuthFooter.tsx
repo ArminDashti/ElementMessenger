@@ -35,8 +35,12 @@ const AuthFooter = (): ReactElement => {
             <a href="https://matrix.org" target="_blank" rel="noreferrer noopener">
                 {_t("powered_by_matrix")}
             </a>
+            <a href="https://github.com/armindashti" target="_blank" rel="noreferrer noopener">
+                {_t("modified_and_maintained_by")}
+            </a>
         </footer>
     );
 };
 
 export default AuthFooter;
+
