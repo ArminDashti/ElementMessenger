@@ -1,7 +1,7 @@
 {
     "default_server_config": {
         "m.homeserver": {
-            "base_url": "http://127.0.0.1:8008",
+            "base_url": "http://10.20.9.59:8008",
             "server_name": "localhost"
         }
     },

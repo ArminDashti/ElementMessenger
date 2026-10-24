@@ -5,14 +5,16 @@ name: element-messenger
 
 services:
     synapse:
-        image: matrixdotorg/synapse:latest
+        image: synapse-erp:local
+        build: ./synapse-erp
         restart: unless-stopped
+        env_file: ./synapse-erp/erp-auth.env
         environment:
             SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
         volumes:
             - ./data/synapse:/data
         ports:
-            - "127.0.0.1:8008:8008"
+            - "0.0.0.0:8008:8008"
 
     element-web:
         image: vectorim/element-web:latest
@@ -24,7 +26,7 @@ services:
             - ../../apps/web/webapp:/app
             - ./element/config.json:/app/config.json:ro
         ports:
-            - "127.0.0.1:8090:80"
+            - "0.0.0.0:8090:80"
         healthcheck:
             test: ["CMD-SHELL", "wget -q --spider http://localhost:80/config.json || exit 1"]
             interval: 15s
