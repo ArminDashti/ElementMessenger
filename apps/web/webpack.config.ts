@@ -25,6 +25,7 @@ import postcssPresetEnv from "postcss-preset-env";
 import postcssImport from "postcss-import";
 import postcssMixins from "postcss-mixins";
 import postcssNested from "postcss-nested";
+import postcssRtlcss from "postcss-rtlcss";
 
 import pkgJson from "./package.json" with { type: "json" };
 import { I18nWebpackPlugin } from "./I18nWebpackPlugin.ts";
@@ -324,9 +325,25 @@ export default (env: string, argv: Record<string, any>): webpack.Configuration =
                         {
                             loader: "css-loader",
                             options: {
-                                importLoaders: 1,
+                                // Both postcss loaders below must also run on @import'ed stylesheets.
+                                importLoaders: 2,
                                 sourceMap: true,
                                 esModule: false,
+                            },
+                        },
+                        {
+                            // Runs on the resolved output of the pass below: rtlcss mangles SCSS variables
+                            // whose names end in a number (`$accent-300` becomes `$accentright -300 top 50%`)
+                            // when it rewrites a background shorthand that still contains one.
+                            loader: "postcss-loader",
+                            ident: "postcss-rtl",
+                            options: {
+                                sourceMap: true,
+                                postcssOptions: () => ({
+                                    "plugins": [postcssRtlcss({ mode: "override", source: "ltr" })],
+                                    "parser": "postcss-scss",
+                                    "local-plugins": true,
+                                }),
                             },
                         },
                         {
@@ -379,9 +396,25 @@ export default (env: string, argv: Record<string, any>): webpack.Configuration =
                         {
                             loader: "css-loader",
                             options: {
-                                importLoaders: 1,
+                                // Both postcss loaders below must also run on @import'ed stylesheets.
+                                importLoaders: 2,
                                 sourceMap: true,
                                 esModule: false,
+                            },
+                        },
+                        {
+                            // Runs on the resolved output of the pass below: rtlcss mangles SCSS variables
+                            // whose names end in a number (`$accent-300` becomes `$accentright -300 top 50%`)
+                            // when it rewrites a background shorthand that still contains one.
+                            loader: "postcss-loader",
+                            ident: "postcss-rtl",
+                            options: {
+                                sourceMap: true,
+                                postcssOptions: () => ({
+                                    "plugins": [postcssRtlcss({ mode: "override", source: "ltr" })],
+                                    "parser": "postcss-scss",
+                                    "local-plugins": true,
+                                }),
                             },
                         },
                         {

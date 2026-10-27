@@ -10,8 +10,9 @@
     "brand": "Element Messenger",
     "default_theme": "light",
     "default_federate": false,
-    "room_directory": {
-        "servers": ["localhost"]
+    "setting_defaults": {
+        "UIFeature.allowCreatingPublicRooms": false,
+        "UIFeature.allowCreatingPublicSpaces": false
     },
     "features": {}
 }

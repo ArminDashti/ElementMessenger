@@ -69,6 +69,58 @@ registration_shared_secret: "local-docker-registration-secret-change-me"
     }
 }
 
+# All rooms stay private: do not allow publishing to the public room directory.
+# Synapse denies publication by default when room_list_publication_rules is absent.
+function Ensure-PublicMediaDownloads {
+    $homeserver = Join-Path $SynapseData "homeserver.yaml"
+    if (-not (Test-Path $homeserver)) {
+        return
+    }
+    $content = Get-Content $homeserver -Raw
+    if ($content -match "enable_authenticated_media:") {
+        return
+    }
+    $content = $content.TrimEnd() + @"
+
+# Local Element Web loads avatars via /_matrix/media/v3/download; Synapse 1.16+ defaults to authenticated-only media.
+enable_authenticated_media: false
+"@
+    Set-Content -Path $homeserver -Value $content -NoNewline
+    Write-Host "Set enable_authenticated_media: false in homeserver.yaml (local avatar display)"
+}
+
+function Ensure-PrivateRoomPolicy {
+    $homeserver = Join-Path $SynapseData "homeserver.yaml"
+    if (-not (Test-Path $homeserver)) {
+        return
+    }
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $lines.AddRange([string[]](Get-Content $homeserver))
+    $start = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^\s*room_list_publication_rules:\s*$') {
+            $start = $i
+            if ($i -gt 0 -and $lines[$i - 1] -match '^\s*#') {
+                $start = $i - 1
+            }
+            break
+        }
+    }
+    if ($start -lt 0) {
+        return
+    }
+    $end = $start + 1
+    while ($end -lt $lines.Count -and $lines[$end] -match '^\s{2,}- ') {
+        $end++
+    }
+    $lines.RemoveRange($start, $end - $start)
+    while ($lines.Count -gt 0 -and [string]::IsNullOrWhiteSpace($lines[$lines.Count - 1])) {
+        $lines.RemoveAt($lines.Count - 1)
+    }
+    Set-Content -Path $homeserver -Value ($lines -join "`n") -NoNewline
+    Write-Host "Removed room_list_publication_rules from homeserver.yaml (private rooms only)"
+}
+
 function Stop-LegacyElementContainer {
     $names = docker ps -a --format "{{.Names}}"
     foreach ($name in $names) {
@@ -130,6 +182,8 @@ function Ensure-AdminUser {
 Ensure-EnvFile
 $envVars = Get-DotEnv -Path $EnvFile
 Ensure-SynapseConfig -EnvVars $envVars
+Ensure-PublicMediaDownloads
+Ensure-PrivateRoomPolicy
 Stop-LegacyElementContainer
 if ($BuildWebApp) {
     Build-ElementWebApp
@@ -139,6 +193,8 @@ Push-Location $ComposeDir
 try {
     docker compose up -d --remove-orphans
     if ($LASTEXITCODE -ne 0) { throw "docker compose up failed" }
+    # Element copies config.json into nginx only at container start.
+    docker compose restart element-web | Out-Null
 
     $deadline = (Get-Date).AddMinutes(3)
     do {

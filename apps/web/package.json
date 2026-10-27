@@ -189,6 +189,7 @@
         "postcss-mixins": "12.1.2",
         "postcss-nested": "8.0.1",
         "postcss-preset-env": "11.6.0",
+        "postcss-rtlcss": "6.0.0",
         "postcss-scss": "4.0.9",
         "postcss-simple-vars": "7.0.1",
         "process": "^0.11.10",

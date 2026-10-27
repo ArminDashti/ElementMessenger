@@ -14,6 +14,7 @@ import { SettingLevel } from "../settings/SettingLevel";
 import { getLanguageRetry } from "./languages";
 import { getLanguageFromBrowser } from "./browser";
 import { registerCustomTranslations } from "./custom";
+import { applyDocumentDirection } from "./direction";
 
 export function getUserLanguage(): string {
     const language = SettingsStore.getValue("language", null, /*excludeDefault:*/ true);
@@ -39,6 +40,7 @@ export async function setLanguage(...preferredLangs: string[]): Promise<void> {
 
     registerTranslations(chosenLanguage, languageData);
     setLocale(chosenLanguage);
+    applyDocumentDirection(chosenLanguage);
 
     await SettingsStore.setValue("language", null, SettingLevel.DEVICE, chosenLanguage);
     // Adds a lot of noise to test runs, so disable logging there.
