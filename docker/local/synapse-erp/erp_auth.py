@@ -1,4 +1,4 @@
-﻿import base64, hashlib, logging, os, re
+import base64, hashlib, logging, os, re
 import pymssql
 from synapse.module_api import ModuleApi
 
@@ -7,13 +7,18 @@ LOCALPART_RE = re.compile(r"^[a-z0-9._=/-]+$")
 
 
 class ErpAuthProvider:
-    """Verify m.login.password against ERP Global.Afrad (MD5(password+salt) base64)."""
+    """Verify m.login.password against ERP Global.Afrad (MD5(password+salt) base64).
+
+    If ERP is unreachable, falls back to the local copy in the Synapse DB table
+    erp_user_cache (localpart, hash, salt, displayname), filled by erp_user_sync.
+    """
 
     def __init__(self, config, api: ModuleApi):
         self.api = api
         self.centers = [int(c) for c in config.get("allowed_centers", [15])]
         self.require_enabled = bool(config.get("require_enable_login", True))
         self.encoding = config.get("password_encoding", "cp1256")
+        self.local_fallback = bool(config.get("local_fallback", True))
         api.register_password_auth_provider_callbacks(
             auth_checkers={("m.login.password", ("password",)): self.check_password}
         )
@@ -38,6 +43,12 @@ class ErpAuthProvider:
             cur.execute(sql, tuple([localpart] + self.centers))
             return cur.fetchall()
 
+    async def _cache_lookup(self, localpart):
+        def f(txn):
+            txn.execute("SELECT localpart, hash, salt, displayname, '' FROM erp_user_cache WHERE localpart = ?", (localpart,))
+            return txn.fetchall()
+        return await self.api.run_db_interaction("erp_cache_lookup", f)
+
     def _hash(self, password, salt):
         try:
             b = (password + (salt or "")).encode(self.encoding)
@@ -53,9 +64,16 @@ class ErpAuthProvider:
             return None
         try:
             rows = await self.api.defer_to_thread(self._lookup, localpart)
-        except Exception:
-            logger.exception("ERP auth: DB lookup failed")
-            return None
+        except Exception as e:
+            if not self.local_fallback:
+                logger.exception("ERP auth: DB lookup failed")
+                return None
+            logger.warning("ERP auth: ERP unreachable (%s); using local erp_user_cache", type(e).__name__)
+            try:
+                rows = await self._cache_lookup(localpart)
+            except Exception:
+                logger.exception("ERP auth: local cache lookup failed")
+                return None
         for _u, phash, salt, fn, ln in rows:
             if phash and self._hash(password, salt) == phash:
                 user_id = self.api.get_qualified_user_id(localpart)
